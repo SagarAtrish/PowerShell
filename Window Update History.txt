@@ -1,0 +1,21 @@
+#Scipt Authur: Sagar Atrish
+$ErrorActionPreference = "Stop"
+$current = Get-Date
+$serversList = gc -Path 'C:\temp\computers.txt'
+foreach($computer in $serversList)
+ {
+  if (test-Connection -ComputerName $computer -BufferSize 16 -Count 1 -ea 0 -Quiet){
+    Add-Content -value $computer -path c:\temp\livePCs.txt  }
+else{    Add-Content -value $computer -path c:\temp\deadPCs.txt  }}
+$FinalList = gc -Path 'C:\temp\livePCs.txt'
+ForEach ($System in $FinalList){  
+    try{
+      Get-CimInstance -ClassName Win32_QuickFixEngineering -Computer $System | ? {$_.InstalledOn} | where { (Get-date($_.Installedon)) -gt (get-date).adddays(-2)}|Select-Object -Property 'CSName','Description','HotFixID','InstalledBy', 'InstalledOn','Caption'  | Export-Csv -Path C:\temp\PatchReport.csv -Append -NoTypeInformation 
+     
+      }
+        catch {
+          Add-Content -value $System -path c:\temp\AccessDenied.txt }
+       }
+$end= Get-Date
+     $diff= New-TimeSpan -Start $current -End $end
+write-host "Total execusion time $diff"
