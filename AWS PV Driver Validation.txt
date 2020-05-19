@@ -1,0 +1,31 @@
+#Scipt Authur: Sagar Atrish
+$ErrorActionPreference = "Stop"
+$current = Get-Date
+
+$serversList = gc -Path 'C:\temp\computers.txt'
+foreach($computer in $serversList)
+ {
+  if (test-Connection -ComputerName $computer -BufferSize 16 -Count 1 -ea 0 -Quiet){
+    Add-Content -value $computer -path c:\temp\livePCs.txt  }
+else{    Add-Content -value $computer -path c:\temp\deadPCs.txt  }}
+$FinalList = gc -Path 'C:\temp\livePCs.txt'
+ForEach ($System in $FinalList){  
+    try{
+     $excelexcel = gwmi win32_product -Filter {Name like "%AWS PV Drivers%"} -ComputerName $System | Select-Object -Property PSComputerName,Name,Version,InstallDate  -ErrorAction SilentlyContinue
+     $excelexcel | Export-Csv -path "c:\temp\demo.csv" -Append -NoTypeInformation -NoClobber
+      }
+       
+     catch {
+          Add-Content -value $System -path c:\temp\AccessDenied.txt }
+     
+     }
+     if( Test-Path -Path C:\temp\deadPC.txt ){Write-Warning "Below servers aren't reachable"
+     gc -Path c:\temp\deadPCs.txt}
+    if( Test-Path -Path C:\temp\AccessDenied.txt ){ write-warning "Access Denied  servers"
+     gc -path c:\temp\AccessDenied.txt }
+     $end= Get-Date
+     $diff= New-TimeSpan -Start $current -End $end
+
+Write-Output "Script Execution time: $diff"
+     
+     
