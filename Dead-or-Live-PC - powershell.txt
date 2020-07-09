@@ -1,0 +1,14 @@
+$serversList = gc -Path 'C:\temp\computers.txt'
+if (Test-Path -Path "c:\temp\livePCs.txt"){Clear-Content c:\temp\LivePCs.txt }
+if (Test-Path -Path "C:\temp\deadPCs.txt"){Clear-Content c:\temp\deadPCs.txt }
+foreach($computer in $serversList){ 
+  if (tnc -ComputerName $computer  -InformationLevel Quiet){Add-Content -value $computer -path c:\temp\livePCs.txt  }    
+else{    Add-Content -value $computer -path c:\temp\deadPCs.txt  }}
+$ReachableMachine= gc -Path "C:\temp\LivePCs.txt"
+$Passcount= $ReachableMachine.count
+$UnReachableMachine= gc -Path "C:\temp\DeadPCs.txt"
+$Failcount = $UnReachableMachine.count
+Write-host -ForegroundColor Green "--------------------------------Reachable Machines ($Passcount)-----------------------------------------------------"
+$ReachableMachine
+Write-host -ForegroundColor Red "--------------------------------Not-Reachable Machines ($Failcount)-----------------------------------------------------"
+$UnReachableMachine
