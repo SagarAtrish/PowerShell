@@ -1,23 +1,10 @@
 ﻿Function Start-Cleanup {
 <# 
-.SYNOPSIS
-   Automate cleaning up a C:\ drive with low disk space
-
-.DESCRIPTION
+   Author: Sagar Atrish
    Cleans the C: drive's Window Temperary files, Windows SoftwareDistribution folder, 
    the local users Temperary folder, IIS logs(if applicable) and empties the recycling bin. 
    All deleted files will go into a log transcript in $env:TEMP. By default this 
    script leaves files that are newer than 7 days old however this variable can be edited.
-
-.EXAMPLE
-   PS C:\> .\Start-Cleanup.ps1
-   Save the file to your hard drive with a .PS1 extention and run the file from an elavated PowerShell prompt.
-
-.NOTES
-   This script will typically clean up anywhere from 1GB up to 15GB of space from a C: drive.
-
-.FUNCTIONALITY
-   PowerShell v3+
 #>
 
 ## Allows the use of -WhatIf
@@ -123,25 +110,7 @@ param(
         Write-Host "[WARNING]" -ForegroundColor DarkYellow -BackgroundColor Black
     }
 
-   <#  Cleans IIS Logs older then $DaysToDelete
-    if (Test-Path C:\inetpub\logs\LogFiles\) {
-        Get-ChildItem "C:\inetpub\logs\LogFiles\*" -Recurse -Force -ErrorAction SilentlyContinue |
-            Where-Object { ($_.CreationTime -lt $(Get-Date).AddDays(-60)) } | Remove-Item -Force -Verbose -Recurse -ErrorAction SilentlyContinue
-        Write-Host "All IIS Logfiles over $DaysToDelete days old have been removed Successfully!                  " -NoNewline -ForegroundColor Green
-        Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-    }
-    else {
-        Write-Host "C:\Windows\logs\CBS\ does not exist, there is nothing to cleanup.                                 " -NoNewline -ForegroundColor DarkGray
-        Write-Host "[WARNING]" -ForegroundColor DarkYellow -BackgroundColor Black
-    } #>
-
-    <# Removes C:\Config.Msi
-    if (test-path C:\Config.Msi){
-        remove-item -Path C:\Config.Msi -force -recurse -Verbose -ErrorAction SilentlyContinue
-    } else {
-        Write-Host "C:\Config.Msi does not exist, there is nothing to cleanup.                                        " -NoNewline -ForegroundColor DarkGray
-        Write-Host "[WARNING]" -ForegroundColor DarkYellow -BackgroundColor Black
-    } #>
+  
 
     ## Removes c:\Intel
     if (test-path c:\Intel){
@@ -169,15 +138,7 @@ param(
 
  
 
-    <# Removes Windows Error Reporting files
-    if (test-path C:\ProgramData\Microsoft\Windows\WER){
-        Get-ChildItem -Path C:\ProgramData\Microsoft\Windows\WER -Recurse | Remove-Item -force -recurse -Verbose -ErrorAction SilentlyContinue
-            Write-host "Deleting Windows Error Reporting files                                                            " -NoNewline -ForegroundColor Green
-            Write-Host "[DONE]" -ForegroundColor Green -BackgroundColor Black
-        } else {
-            Write-Host "C:\ProgramData\Microsoft\Windows\WER does not exist, there is nothing to cleanup.            " -NoNewline -ForegroundColor DarkGray
-            Write-Host "[WARNING]" -ForegroundColor DarkYellow -BackgroundColor Black
-    } #>
+  
 
     ## Removes System and User Temp Files - lots of access denied will occur.
     ## Cleans up c:\windows\temp
